@@ -47,7 +47,7 @@ def match_pattern(pattern, string):
     """
     Attempts to find and replace each letter in a string based on a pattern string.
     - both the pattern and the string are the same length
-    - pattern characters are only replaced once, so a pattern of 'aaabaaa'
+    - pattern characters are only replaced once, so a pattern of 'aaabaaa' would only be visited twice 'a', then 'b'.
     :param pattern: A series of characters, 'xxyx', 'xyx', xyzxyy'
     :param string: Any string of characters 'jason', 'arbitrary', 'seeking', 'gibberish'
     :return: bool, mangled string used to determine pattern match
