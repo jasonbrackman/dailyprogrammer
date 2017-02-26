@@ -1,5 +1,5 @@
 import pytest
-from . import looking_for_patterns
+import looking_for_patterns
 
 
 @pytest.fixture(scope='session')
@@ -8,6 +8,7 @@ def words():
         words_ = [word.strip() for word in handle]
 
     return words_
+
 
 @pytest.mark.parametrize('pattern, expected', [
     ('XXYY', ['aarrgh', 'aarrghh', 'addressee', 'addressees', 'balloons', 'belleek']),

@@ -2,6 +2,15 @@ import itertools
 
 
 def search_for_pattern(pattern, word):
+    """
+    Breaks down a string into a series of character representations to then see if the same pattern is
+    repeated in the string word passed in.  This is looking for a pattern match and not a specific
+    character  to character match.
+
+    :param pattern: Repeating characters to compare against the given word
+    :param word: Word to determine if it matches given pattern
+    :return: bool
+    """
     if len(word) < len(pattern):
         return False
 
@@ -12,13 +21,20 @@ def search_for_pattern(pattern, word):
         return False
     else:
         start = repetition_word.index(repetition_pattern)
-        end = len(repetition_word)
+        end = start + len(repetition_pattern)
         did_match, _ = match_pattern(usage_pattern, usage_word[start:end])
         return did_match
 
 
-def get_repetition_and_usage_as_strings(pattern):
-    _test_pattern = [list(g) for k, g in itertools.groupby(pattern.strip())]
+def get_repetition_and_usage_as_strings(string):
+    """
+    Breaks down words into a basic pattern of how many times a character is interupted followed by the
+    character. So 'aaba' becomes '2a1b1a'.
+    This is then split into its repetition ID and character structure, like '211', 'aba'.
+    :param string:
+    :return: tuple -> repetition id string and characters used string
+    """
+    _test_pattern = [list(g) for k, g in itertools.groupby(string.strip())]
 
     _test_nums = (''.join([str(len(item)) for item in _test_pattern]),
                   ''.join([item[0] for item in _test_pattern])
@@ -28,6 +44,15 @@ def get_repetition_and_usage_as_strings(pattern):
 
 
 def match_pattern(pattern, string):
+    """
+    Attempts to find and replace each letter in a string based on a pattern string.
+    - both the pattern and the string are the same length
+    - pattern characters are only replaced once, so a pattern of 'aaabaaa'
+    :param pattern: A series of characters, 'xxyx', 'xyx', xyzxyy'
+    :param string: Any string of characters 'jason', 'arbitrary', 'seeking', 'gibberish'
+    :return: bool, mangled string used to determine pattern match
+    """
+    assert len(pattern) == len(string), "Expected same length strings, but received {}, {}".format(pattern, string)
     seen = []
     for index, character in enumerate(pattern):
         if character not in seen:
@@ -49,4 +74,4 @@ def main():
 
 if __name__ in "__main__":
     main()
-    print(search_for_pattern('', 'nasoe'))
+
