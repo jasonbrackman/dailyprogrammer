@@ -1,10 +1,12 @@
+import os
 import pytest
-import looking_for_patterns
+from challenge_301 import looking_for_patterns
 
 
 @pytest.fixture(scope='session')
 def words():
-    with open('words.txt', 'rt') as handle:
+    head, tail = os.path.split(__file__)
+    with open(os.path.join(head, '..', 'words.txt'), 'rt') as handle:
         words_ = [word.strip() for word in handle]
 
     return words_

@@ -19,13 +19,13 @@ def timer_stuff():
           '********-']
      for s in range(30):
           for item in x:
-               print('\r[{0}]'.format(item), end='')
+               print('\r[{0}] {1}'.format(item, "Something important is working."), end='')
                time.sleep(0.25)
      for i in range(20):
           print("\r" + str(i), end="")
           time.sleep(0.25)
 
 
-# timer_stuff()
+timer_stuff()
 
 print('{}'.format("asdf").rjust(6))
