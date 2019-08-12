@@ -1,12 +1,22 @@
 import string
 from collections import Counter
-from itertools import combinations_with_replacement, permutations
+from itertools import permutations, combinations
+
 
 def smorse(text):
     morse = ".- -... -.-. -.. . ..-. --. .... .. .--- -.- .-.. -- -. --- .--. --.- .-. ... - ..- ...- .-- -..- -.-- --..".split()
     smorse_map = dict(zip(string.ascii_lowercase, morse))
     return ''.join([smorse_map[x] for x in text.lower()])
 
+
+def smalpha(text):
+    """Must contain a result that includes all letters of the alphabet in any order."""
+    morse = ".- -... -.-. -.. . ..-. --. .... .. .--- -.- .-.. -- -. --- .--. --.- .-. ... - ..- ...- .-- -..- -.-- --..".split()
+    smorse_map = dict(zip(morse, string.ascii_lowercase))
+    return ''.join([smorse_map[x] for x in text.lower()])
+
+
+    ...
 
 assert(smorse("sos") == "...---...")
 assert(smorse("daily") == "-...-...-..-.--")
