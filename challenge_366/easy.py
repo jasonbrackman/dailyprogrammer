@@ -1,7 +1,7 @@
+# python 3.6.0
+
 from typing import List
-from collections import Counter
 import time
-from pprint import pprint, pformat
 
 
 def timeit(func):
@@ -9,7 +9,7 @@ def timeit(func):
         t = time.process_time()
         result = func(*args, **kwargs)
         elapsed_time = time.process_time() - t
-        print(f"[{func.__name__} Elapsed Time: {elapsed_time:06f}")
+        print(f"[{func.__name__}()] Elapsed Time: {elapsed_time:06f}")
 
         return result
 
@@ -22,17 +22,26 @@ def yield_word():
             yield line.strip()
 
 
-WORDS = dict()
-for word in yield_word():
-    # set up a dict that contains quick lookup of:
-    #   [len][alpha][words]
-    word_length = len(word)
-    count = WORDS.setdefault(word_length, {})
-    alpha = count.setdefault(word[0:4], [])
-    alpha.append(word)
+@timeit
+def create_cache(courseness=10):
+    """
+    :param courseness: # you can overfit for the list, higher/lower # creates more to search
+    :return:
+    """
+    cache = dict()
+    for word in yield_word():
+        # set up a dict that contains quick lookup of:
+        #   [len][prefix][words]
+        word_length = len(word)
+        count = cache.setdefault(word_length, {})
+        alpha = count.setdefault(word[0:courseness], [])
+        alpha.append(word)
+    return cache
 
-# pprint(WORDS)
-print("done")
+
+MAGIC = 10  # used in other areas of script
+WORDS = create_cache(courseness=MAGIC)
+
 
 def funnel(first: str, second: str) -> bool:
     """
@@ -56,25 +65,18 @@ def bonus(word: str) -> List[str]:
     words doesn't matter.
     """
     char_count = len(word) - 1
+    search_section = WORDS[char_count]
 
-    # if we have content to search -- lets do it.
-    # for chars in WORDS[char_count]:
     word_list = []
 
-    prefix = word[0:5]
-    prefixes = list()
-    for i in range(5):
-        test = list(prefix)
-        test[i] = ''
-        test = ''.join(test)
-        if test in WORDS[char_count]:
-            word_list += WORDS[char_count][test]
+    prefix = word[0:MAGIC+1]
+    for i in range(MAGIC+1):
+        pfx = list(prefix)
+        if i < len(pfx):
+            pfx[i] = ''
+        pfx = ''.join(pfx)
+        word_list += search_section.get(pfx, [])
 
-
-    # for i in range(4):
-    #
-    #     if word[i:i+3] in WORDS[char_count]:
-    #         word_list += WORDS[char_count][word[i:i+3]]
     results = [word2 for word2 in set(word_list) if funnel(word, word2)]
 
     return sorted(results)
@@ -91,16 +93,20 @@ assert bonus("dragoon") == ["dragon"]
 assert bonus("boats") == sorted(["oats", "bats", "bots", "boas", "boat"])
 assert bonus("affidavit") == []
 
+
 @timeit
-def doit():
-    count = 1
+def bonus2() -> int:
+    count = 0
     for word in yield_word():
         if len(word) >= 5 and len(word)-1 in WORDS:
             result = bonus(word)
             if len(result) >= 5:
-                print(f"[{count}] {word}, {result}")
                 count += 1
+                print(f"[{count:02}] {word}: {result}")
+
+    return count
 
 
 if __name__ == "__main__":
-    doit()
+    # best on my laptop is ~3.5s
+    assert bonus2() == 28
