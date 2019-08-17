@@ -23,7 +23,7 @@ def yield_word():
 
 
 @timeit
-def create_cache(courseness=10):
+def create_cache():
     """
     :param courseness: # you can overfit for the list, higher/lower # creates more to search
     :return:
@@ -34,13 +34,12 @@ def create_cache(courseness=10):
         #   [len][prefix][words]
         word_length = len(word)
         count = cache.setdefault(word_length, {})
-        alpha = count.setdefault(word[0:courseness], [])
-        alpha.append(word)
+        alpha = count.setdefault(word[0:word_length-1], set())
+        alpha.add(word)
     return cache
 
 
-MAGIC = 10  # used in other areas of script
-WORDS = create_cache(courseness=MAGIC)
+WORDS = create_cache()
 
 
 def funnel(first: str, second: str) -> bool:
@@ -51,7 +50,9 @@ def funnel(first: str, second: str) -> bool:
     """
 
     for index in range(len(first)):
-        word = ''.join([x for i, x in enumerate(first) if i != index])
+        word = list(first)
+        word[index] = ''
+        word = ''.join(word)
         if second == word:
             return True
     return False
@@ -69,17 +70,20 @@ def bonus(word: str) -> List[str]:
 
     word_list = []
 
-    prefix = word[0:MAGIC+1]
-    for i in range(MAGIC+1):
-        pfx = list(prefix)
-        if i < len(pfx):
-            pfx[i] = ''
+    seen = []
+
+    for i in range(char_count):
+        pfx = list(word)
+        pfx[-1] = ''  # neutralize last character
+        pfx[i] = ''  # neutralize the indexed character
         pfx = ''.join(pfx)
-        word_list += search_section.get(pfx, [])
+        if pfx not in seen:
+            word_list += search_section.get(pfx, [])
+            seen.append(pfx)
 
-    results = [word2 for word2 in set(word_list) if funnel(word, word2)]
+    results = [word2 for word2 in word_list if funnel(word, word2)]
 
-    return sorted(results)
+    return results
 
 
 assert funnel("leave", "eave") is True
@@ -90,7 +94,7 @@ assert funnel("sleet", "lets") is False
 assert funnel("skiff", "ski") is False
 
 assert bonus("dragoon") == ["dragon"]
-assert bonus("boats") == sorted(["oats", "bats", "bots", "boas", "boat"])
+assert sorted(bonus("boats")) == sorted(["oats", "bats", "bots", "boas", "boat"])
 assert bonus("affidavit") == []
 
 
@@ -108,5 +112,5 @@ def bonus2() -> int:
 
 
 if __name__ == "__main__":
-    # best on my laptop is ~3.5s
+    # 3.1ghz i7 (MacOS 10.14.6) = ~3s
     assert bonus2() == 28
