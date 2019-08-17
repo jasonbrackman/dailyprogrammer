@@ -1,5 +1,19 @@
 from typing import List
 from collections import Counter
+import time
+from pprint import pprint, pformat
+
+
+def timeit(func):
+    def wrapper(*args, **kwargs):
+        t = time.process_time()
+        result = func(*args, **kwargs)
+        elapsed_time = time.process_time() - t
+        print(f"[{func.__name__} Elapsed Time: {elapsed_time:06f}")
+
+        return result
+
+    return wrapper
 
 
 def yield_word():
@@ -10,20 +24,15 @@ def yield_word():
 
 WORDS = dict()
 for word in yield_word():
+    # set up a dict that contains quick lookup of:
+    #   [len][alpha][words]
     word_length = len(word)
-    if word_length not in WORDS:
-        WORDS[word_length] = []
-    WORDS[word_length].append(word)
+    count = WORDS.setdefault(word_length, {})
+    alpha = count.setdefault(word[0:4], [])
+    alpha.append(word)
 
-
-def quick_reject(s1: str, s2: str) -> bool:
-    current = 3
-    for idx in range(3):
-        if s1[idx] not in s2:
-            current -= 1
-    # print(s1, s2, current)
-    return current > 0
-
+# pprint(WORDS)
+print("done")
 
 def funnel(first: str, second: str) -> bool:
     """
@@ -32,7 +41,7 @@ def funnel(first: str, second: str) -> bool:
     the same order.
     """
 
-    for index, _ in enumerate(first):
+    for index in range(len(first)):
         word = ''.join([x for i, x in enumerate(first) if i != index])
         if second == word:
             return True
@@ -46,14 +55,28 @@ def bonus(word: str) -> List[str]:
     can remove to make the same word, only count it once. Ordering of the output
     words doesn't matter.
     """
-    results = list()
-    # for line in yield_word():
-    for line in WORDS[len(word)-1]:
-        if quick_reject(word, line):
-            if funnel(word, line):
-                results.append(line)
+    char_count = len(word) - 1
 
-    # sorted only to be make testing easier
+    # if we have content to search -- lets do it.
+    # for chars in WORDS[char_count]:
+    word_list = []
+
+    prefix = word[0:5]
+    prefixes = list()
+    for i in range(5):
+        test = list(prefix)
+        test[i] = ''
+        test = ''.join(test)
+        if test in WORDS[char_count]:
+            word_list += WORDS[char_count][test]
+
+
+    # for i in range(4):
+    #
+    #     if word[i:i+3] in WORDS[char_count]:
+    #         word_list += WORDS[char_count][word[i:i+3]]
+    results = [word2 for word2 in set(word_list) if funnel(word, word2)]
+
     return sorted(results)
 
 
@@ -68,10 +91,16 @@ assert bonus("dragoon") == ["dragon"]
 assert bonus("boats") == sorted(["oats", "bats", "bots", "boas", "boat"])
 assert bonus("affidavit") == []
 
-
-if __name__ == "__main__":
-    for word in WORDS[5]:
-        # if len(word) >= 5:
+@timeit
+def doit():
+    count = 1
+    for word in yield_word():
+        if len(word) >= 5 and len(word)-1 in WORDS:
             result = bonus(word)
             if len(result) >= 5:
-                print(word, result)
+                print(f"[{count}] {word}, {result}")
+                count += 1
+
+
+if __name__ == "__main__":
+    doit()
