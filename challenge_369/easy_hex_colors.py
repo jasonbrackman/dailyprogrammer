@@ -1,6 +1,10 @@
 from typing import NamedTuple
 import re
 
+# Regex pattern search to be used multiple times
+# Example: #ff0533 -> ff, 05, 33
+pattern = re.compile(r'#(?P<r>\w{2})(?P<g>\w{2})(?P<b>\w{2})')
+
 
 class RGB(NamedTuple):
     r: int
@@ -18,35 +22,27 @@ class RGB(NamedTuple):
         return f"({self.r}, {self.g}, {self.b}) => {hex_conversion}"
 
 
-def hexcolor(r: int, g: int, b: int):
+def hexcolor(r: int, g: int, b: int) -> str:
     color = RGB(r, g, b)
     return color.hex()
 
 
-# Regex pattern search to be used multiple times
-# Example: #ff0533 -> ff, 05, 33
-pattern = re.compile(r'#(?P<r>\w{2})(?P<g>\w{2})(?P<b>\w{2})')
-
-
 def blend(colours: set) -> str:
 
-    red = 0
-    green = 0
-    blue = 0
+    red, green, blue = 0, 0, 0
+
     for colour in colours:
         c = re.match(pattern, colour)
-        c = c.groupdict()
         red += int(c["r"], 16)
         green += int(c["g"], 16)
         blue += int(c["b"], 16)
 
-    result = RGB(
+    return hexcolor(
+        # ensuring any weird rounding only happens once
         int(round(red / len(colours))),
         int(round(green / len(colours))),
         int(round(blue / len(colours)))
     )
-
-    return result.hex()
 
 
 assert hexcolor(255, 99, 71) == "#FF6347"  # (Tomato)
@@ -56,5 +52,3 @@ assert hexcolor(0, 0, 205) == "#0000CD"  # (MediumBlue)
 
 assert blend({"#000000", "#778899"}) == "#3C444C"
 assert blend({"#E6E6FA", "#FF69B4", "#B0C4DE"}) == "#DCB1D9"
-
-
