@@ -3,15 +3,15 @@ import os
 from typing import List
 
 
-class Canvas:
+class Image:
     def __init__(self, cols, rows):
         self.cols = cols
         self.rows = rows
         self.pixels = list()
         # Default background is black
-        self.fill(0, 0, 0)
+        self.start(0, 0, 0)
 
-    def fill(self, r: int, g: int, b: int) -> None:
+    def start(self, r: int, g: int, b: int) -> None:
         for row in range(self.rows):
             self.pixels.append([])
             for col in range(self.cols):
@@ -30,29 +30,44 @@ class Canvas:
         return math.sqrt(pow((x1 - x2), 2) + pow((y1 - y2), 2))
 
     def line(self, r: int, g: int, b: int, x1: int, y1: int, x2: int, y2: int) -> None:
-        """"""
-        results = [(x1, y1)]
+        """Given two points draw a line between them."""
+        dx = x2 - x1
+        dy = y2 - y1
+        distance = int(round(
+            math.sqrt((math.pow(dx, 2) + math.pow(dy, 2)))
+        ))
+        for i in range(distance):
+            new_x = x1 + int(round((i / distance) * dx))
+            new_y = y1 + int(round((i / distance) * dy))
+            self.point(r, g, b, new_x, new_y)
 
-        current = (x1, y1)
-        while (x2, y2) not in results:
-            _x, _y = current
+    def bline(self, r: int, g: int, b: int, x0: int, y0: int, x1: int, y1: int) -> None:
+        """
+        Bresenham's line algorithm.
 
-            # set current to a large num.
-            current_values = (1_000_000_000, ())
-            for i in (_x-1,_x, _x+1):
-                for j in (_y-1, _y, _y+1):
-                    if i >= 0 and j >= 0:
-                        if (i, j) not in results and (i, j) != (_x, _y):
-                            v = self.euclidean_distance(i, j, x2, y2)
-                            if v < current_values[0]:
-                                current_values = (v, (i, j))
+        Literally taken from here:
+            https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+        """
+        dx = abs(x1-x0)
+        sx = 1 if x0 < x1 else -1
 
-            current = current_values[1]
-            if current:
-                results.append(current)
+        dy = -abs(y1-y0)
+        sy = 1 if y0 < y1 else -1
 
-        for item in results:
-            self.point(r, g, b, item[0], item[1])
+        err = dx+dy
+        while True:
+            if x0 == x1 and y0 == y1:
+                break
+            e2 = 2 * err
+            if e2 >= dy:
+                err += dy
+                x0 += sx
+
+            if e2 <= dx:
+                err += dx
+                y0 += sy
+
+            self.point(r, g, b, x0, y0)
 
     def rect(self, r: int, g: int, b: int, x1: int, y1: int, x2: int, y2: int) -> None:
         """
@@ -83,11 +98,13 @@ def generate_image(file):
     with open(file, 'rt') as handle:
         lines = (line.strip("\n").split() for line in handle.readlines())
         dimensions = [int(n) for n in next(lines)]
-        instructions = [sanitize(line) for line in lines]
+        instructions = [sanitize(line) for line in lines if "#" not in line]
 
-    canvas = Canvas(dimensions[0], dimensions[1])
+    canvas = Image(dimensions[0], dimensions[1])
     for instruction in instructions:
-        getattr(canvas, instruction[0])(*instruction[1:])
+        func, *args = instruction
+        if hasattr(canvas, func):
+            getattr(canvas, func)(*args)
     canvas.paint(file.replace(".txt", ".ppm"))
 
 
