@@ -14,13 +14,10 @@ def get_results(queries, values) -> dict:
         pass01 = [1 for v in values if v >= query]
         pass02 = [v for v in values if v < query]
 
-        while len(pass02) > 0:
+        while pass02:
             current = pass02.pop(0)
-
             count = query - current
-
             current_len = len(pass02)
-
             if current_len >= count:
                 for _ in range(count):
                     eat = pass02.pop()

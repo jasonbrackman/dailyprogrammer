@@ -31,11 +31,12 @@ def create_cache():
     cache = dict()
     for word in yield_word():
         # set up a dict that contains quick lookup of:
-        #   [len][prefix][words]
+        #   [word_length][prefix][set(words)]
         word_length = len(word)
         count = cache.setdefault(word_length, {})
         alpha = count.setdefault(word[0:word_length-1], set())
         alpha.add(word)
+
     return cache
 
 
@@ -106,7 +107,7 @@ def bonus2() -> int:
             result = bonus(word)
             if len(result) >= 5:
                 count += 1
-                print(f"[{count:02}] {word}: {result}")
+                # print(f"[{count:02}] {word}: {result}")
 
     return count
 

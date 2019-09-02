@@ -76,8 +76,7 @@ class RGB(NamedTuple):
         ])
 
     def __repr__(self) -> str:
-        hex_conversion = self.hex()
-        return f"({self.r}, {self.g}, {self.b}) => {hex_conversion}"
+        return f"({self.r}, {self.g}, {self.b}) => {self.srgb_to_linear()} => {self.hex()}"
 
 
 def hexcolor(r: int, g: int, b: int) -> str:
@@ -114,12 +113,13 @@ assert blend({"#E6E6FA", "#FF69B4", "#B0C4DE"}) == "#DCB1D9"
 
 # -- Additional Exploration w/ Gamma Correction
 result1 = RGB.blend_hexcodes({"#000000", "#778899"})
-print(f"Gamma Corrected Blend: {result1} and without correction -> #3C444C")
+print(f"After Gamma Blend: {result1} and without correction -> #3C444C")
 
 result2 = RGB.blend_hexcodes({"#E6E6FA", "#FF69B4", "#B0C4DE"})
-print(f"Gamma Corrected Blend: {result2} and without correction -> #DCB1D9")
+print(f"After Gamma Blend: {result2} and without correction -> #DCB1D9")
 
 result3 = RGB.blend_hexcodes({"#ff0000", "#00ff00"})
-print(result3)
+print(f"After Gamma Blend: {result3}")
 
-print(blend({"#ff0000", "#00ff00"}))
+result4 = blend({"#ff0000", "#00ff00"})
+print(f"After Blend: {result4}")
