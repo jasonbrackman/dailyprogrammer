@@ -1,6 +1,5 @@
 import string
 from collections import Counter
-from itertools import permutations, combinations
 
 
 def smorse(text):
@@ -15,8 +14,6 @@ def smalpha(text):
     smorse_map = dict(zip(morse, string.ascii_lowercase))
     return ''.join([smorse_map[x] for x in text.lower()])
 
-
-    ...
 
 assert(smorse("sos") == "...---...")
 assert(smorse("daily") == "-...-...-..-.--")

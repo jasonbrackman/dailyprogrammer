@@ -23,7 +23,7 @@ def recursive_track(text, track=None):
             track.pop()
 
 
-if __name__ == "__main__":
+def main():
     # simple example -- solved in 0.000 seconds
     t = ".--...-.-.-.....-.--........----.-.-..---.---.--.--.-.-....-..-...-.---..--.----.."
 
@@ -45,3 +45,7 @@ if __name__ == "__main__":
         # print(''.join(result))
     t2 = time.monotonic()
     print(f"[{(t2 - t1) / num:.6f} Seconds] Avg of {num} iterations.")
+
+
+if __name__ == "__main__":
+    main()
