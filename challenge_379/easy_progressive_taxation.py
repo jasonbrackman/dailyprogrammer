@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import math
 
 CAP_RATE = {
     10_000: 0,
@@ -37,3 +38,18 @@ def tax(num: int) -> int:
         total_tax += (whats_left * CAP_RATE["default"])
 
     return int(total_tax)
+
+
+def overall(tax_rate: float) -> int:
+    start = next(iter(CAP_RATE.keys()))
+    if tax_rate <= CAP_RATE[start]:
+        return start
+
+    for x in range(10_000, 500_000):
+        t = tax(x)
+        rate = t/x
+
+        if math.isclose(round(rate, 5), tax_rate):
+            return x
+
+    return -1

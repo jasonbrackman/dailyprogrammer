@@ -1,4 +1,4 @@
-
+import math
 import unittest
 from challenge_379 import easy_progressive_taxation as progressive_taxation
 
@@ -30,6 +30,13 @@ class MyTestCase(unittest.TestCase):
 
     def test_tax_1234567(self):
         self.assertEquals(progressive_taxation.tax(1_234_567), 473326)
+
+    def test_overall_others(self):
+        self.assertAlmostEqual(progressive_taxation.overall(0), 10_000)
+        self.assertAlmostEqual(progressive_taxation.overall(0.06), 25000)
+        assert math.isclose(progressive_taxation.overall(0.09), 34_375, abs_tol=1)
+        assert math.isclose(progressive_taxation.overall(0.32), 256_250, abs_tol=15)
+        self.assertAlmostEqual(progressive_taxation.overall(0.4), -1)
 
 
 if __name__ == '__main__':
