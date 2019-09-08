@@ -18,11 +18,6 @@ class MyTestCase(unittest.TestCase):
     def test_new_number_999909(self):
         self.assertEqual(10101010110, easy.new_number(999909))
 
-    def test_number_collection(self):
-        result = easy.break_down(1239)
-        self.assertEqual(result, [9, 3, 2, 1])
-        self.assertEqual(easy.build_up(result), 23410)
-
 
 if __name__ == '__main__':
     unittest.main()
